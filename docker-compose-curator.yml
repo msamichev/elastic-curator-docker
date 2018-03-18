@@ -1,0 +1,31 @@
+version: '3'
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    container_name: elasticsearch
+#    volumes:
+#      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  curator:
+    image: elastic-curator
+    container_name: curator
+    volumes:
+      - ./config/:/config
+    environment:
+      UNIT_COUNT: 1
+      UNIT: days
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+networks:
+  elk:
+    driver: bridge
